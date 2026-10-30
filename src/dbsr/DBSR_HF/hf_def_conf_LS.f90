@@ -26,12 +26,10 @@
        Call Decode_conf_LS(configuration,no_LS,nn_LS,ln_LS,iq_LS,in_LS)
        Call Incode_conf_LS(configuration,no_LS,nn_LS,ln_LS,iq_LS,in_LS)
        core = ' '
-write(*,*) 'ncore =', ncore
        if(ncore.gt.0) then
         m = 0
         Do i=1,ncore
-write(*,*) 'ecore = ', E_core(i)
-         write(core(m+1:),'(2x,a)') E_core(i); m = m + 4
+         write(core(m+1:),'(a)') E_core(i); m = m + 5
         End do
        end if
 
@@ -166,28 +164,43 @@ CONTAINS
 !=========================================================================
       Subroutine core_LS_jj
 !=========================================================================
-! ... convrt the LS core to jj-core
+! ... convert the core from name.LS to jj-core; the subshells may be in
+! ... jj notation (1s 2s 2p- 2p) or LS notation (1s 2s 2p), where an LS
+! ... subshell nl stands for nl- and nl
 !-------------------------------------------------------------------------
       Use dbsr_hf
 
       Implicit none
-      Character(5) :: EL
-      Integer :: i,j,k,n,ii
+      Character(5) :: EL(mcore)
+      Integer :: i,m,n,kap,l,j,k
+      Character(5), external :: ELj
 
-      n = len_trim(core)/4; i = 0;  k = 0
-      Do j=1,n
-       EL='     '; EL(1:4) = core(k+1:k+4);  k = k + 4
-       if(EL(4:4).ne.'s') then
-        i=i+1; EL(5:5)='-'; e_core(i)=EL; EL(5:5)=' '
-        e_core(i) = adjustl(e_core(i))
-        Call EL_NLJK(e_core(i),n_core(i),k_core(i),l_core(i),j_core(i),ii)
-       end if
-       i=i+1; e_core(i)=EL
-       e_core(i) = adjustl(e_core(i))
-       Call EL_NLJK(e_core(i),n_core(i),k_core(i),l_core(i),j_core(i),ii)
+      Do m = 1,mcore
+       read(core,*,IOSTAT=i) EL(1:m)
+       if(i /= 0) Exit
       End do
-      ncore = i
+      m = m - 1
+
+      ncore = 0
+      Do i = 1,m
+       EL(i) = adjustl(EL(i))
+       Call EL_NLJK(EL(i),n,kap,l,j,k)
+       if(l.gt.0.and.j.eq.l+l+1) Call Add_core(adjustl(ELj(n,l,l+l-1,k)))
+       Call Add_core(EL(i))
+      End do
       write(core,'(50a5)') (e_core(i),i=1,ncore)
+
+CONTAINS
+
+      Subroutine Add_core(EL1)
+      Character(5) :: EL1
+      Integer :: ii
+      Do ii = 1,ncore; if(e_core(ii).eq.EL1) Return; End do
+      if(ncore.eq.mcore) Stop 'core_LS_jj: too many core subshells'
+      ncore = ncore + 1; e_core(ncore) = EL1
+      Call EL_NLJK(e_core(ncore),n_core(ncore),k_core(ncore), &
+                   l_core(ncore),j_core(ncore),ii)
+      End Subroutine Add_core
 
       End Subroutine core_LS_jj
 
