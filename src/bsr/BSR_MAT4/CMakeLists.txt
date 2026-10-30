@@ -18,15 +18,17 @@ add_executable(bsr_mat4
   check_mat.f90)
 target_link_libraries(bsr_mat4 bs zconfls zcom ${BLAS_LAPACK_LIBRARIES})
 
-add_executable(bsr_mat4_mpi
-  ${BSR_MAT4_COMMON_SOURCES}
-  bsr_mat_mpi.f90
-  br_arg.f90
-  check_mat_mpi.f90
-  collect_mpi.f90
-  read_matrix_mpi.f90
-  record_matrix_mpi.f90
-  state_res_mpi.f90
-  stop_mpi.f90
-  sub1_mpi.f90)
-target_link_libraries(bsr_mat4_mpi bs zconfls zcom bsr_mpi MPI::MPI_Fortran ${BLAS_LAPACK_LIBRARIES})
+if(${MPI_Fortran_FOUND})
+  add_executable(bsr_mat4_mpi
+    ${BSR_MAT4_COMMON_SOURCES}
+    bsr_mat_mpi.f90
+    br_arg.f90
+    check_mat_mpi.f90
+    collect_mpi.f90
+    read_matrix_mpi.f90
+    record_matrix_mpi.f90
+    state_res_mpi.f90
+    stop_mpi.f90
+    sub1_mpi.f90)
+  target_link_libraries(bsr_mat4_mpi bs zconfls zcom bsr_mpi MPI::MPI_Fortran ${BLAS_LAPACK_LIBRARIES})
+endif()
