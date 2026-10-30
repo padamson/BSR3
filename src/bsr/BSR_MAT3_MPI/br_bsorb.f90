@@ -15,10 +15,11 @@
       Call MPI_BCAST(nbf,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
       if(nbf.eq.0) Return
 
+      Call MPI_BCAST(mbf,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
+
       if(myid.ne.0) then
        if(Allocated(nbs)) &
           Deallocate (nbs,lbs,kbs,mbs,iech,ebs,IBORT,PBS,QBS,OBS)
-       mbf = nbf
        Allocate(nbs(mbf),lbs(mbf),kbs(mbf),ebs(mbf),mbs(1:mbf), &
                 iech(1:mbf),IBORT(1:mbf,1:mbf),PBS(1:ns,1:mbf), &
                 QBS(1:ns,1:mbf),OBS(1:mbf,1:mbf))
@@ -35,9 +36,9 @@
       Call MPI_BCAST(PBS,nbf*ns,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
       Call MPI_BCAST(QBS,nbf*ns,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
 
-      Call MPI_BCAST(OBS,nbf*nbf,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
+      Call MPI_BCAST(OBS,mbf*mbf,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
 
-      Call MPI_BCAST(IBORT,nbf*nbf,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
+      Call MPI_BCAST(IBORT,mbf*mbf,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
 
       End Subroutine br_bsorb
 
