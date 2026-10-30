@@ -42,6 +42,7 @@
       Call Det_expn_jj (no1,ln1,jn1,iq1,Jshell1,Vshell1,Jintra1)
       kdt1=kdt
 
+      if(allocated(C_det1)) Deallocate(C_det1,IP_det1)
       Allocate(C_det1(kdt1), IP_det1(ne,kdt1))
       C_det1(1:kdt1) = C_det(1:kdt1)
       IP_det1(1:ne,1:kdt1) = IP_det(1:ne,1:kdt1)
@@ -50,6 +51,7 @@
       Call Det_expn_jj (no2,ln2,jn2,iq2,Jshell2,Vshell2,Jintra2)
       kdt2=kdt
 
+      if(allocated(C_det2)) Deallocate(C_det2,IP_det2)
       Allocate(C_det2(kdt2), IP_det2(ne,kdt2))
       C_det2(1:kdt2) = C_det(1:kdt2)
       IP_det2(1:ne,1:kdt2) = IP_det(1:ne,1:kdt2)
