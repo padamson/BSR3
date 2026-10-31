@@ -25,28 +25,24 @@ jobs:
 
     steps:
     - name: Get Sources
-      uses: actions/checkout@v2
+      uses: actions/checkout@v7
 
     - name: Install Dependencies (Linux)
       run: |
-        sudo apt-mark hold firefox
         sudo apt-get update
-        sudo apt-get upgrade
         sudo apt-get install -y build-essential gfortran cmake \
            libopenblas-dev openmpi-bin openmpi-common libopenmpi-dev libscalapack-openmpi-dev
         ${{ github.workspace }}/.github/workflows/ubuntu-fix-scalapack.sh
       if: matrix.os == 'ubuntu-latest'
     - name: Install Dependencies (macOS)
-      run: |
-        sudo ln -s $(brew --prefix)/bin/gfortran-13 $(brew --prefix)/bin/gfortran
-        brew install gcc gfortran cmake open-mpi openblas scalapack
+      run: brew install gcc cmake open-mpi scalapack
       if: matrix.os == 'macos-latest'
 
     - name: Setup CMake
       run: |
         mkdir "${{ runner.workspace }}/build"
         cd "${{ runner.workspace }}/build"
-        cmake -DBSR_VERSION=${{ matrix.bsr_version}} $GITHUB_WORKSPACE/src
+        FC=gfortran cmake -DBSR_VERSION=${{ matrix.bsr_version}} $GITHUB_WORKSPACE/src
       shell: bash
 
     - name: Build
